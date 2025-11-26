@@ -16,20 +16,20 @@
             background: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
         }
-
+        
         h1 {
             text-align: center;
             padding: 16px;
             margin: 0;
         }
-
+        
         .item-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
             padding: 16px;
         }
-
+        
         .item {
             background: var(--tg-theme-secondary-bg-color);
             border-radius: 12px;
@@ -38,28 +38,29 @@
             gap: 12px;
             align-items: center;
         }
-
+        
         .item img {
             width: 90px;
             height: 90px;
             border-radius: 10px;
             object-fit: cover;
         }
-
+        
         .item-info {
             flex-grow: 1;
         }
-
+        
         .item-name {
             font-size: 18px;
             font-weight: 600;
         }
-
+        
         .item-price {
             opacity: 0.8;
             margin: 4px 0;
         }
-
+        
+        /* ----- Анимация кнопки Add ----- */
         .btn {
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
@@ -68,8 +69,15 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
+        
+            transition: transform 0.15s ease;
         }
-
+        
+        .btn:active {
+            transform: scale(0.92);
+        }
+        
+        /* ----- Корзина (фикс + анимация) ----- */
         .cart-panel {
             position: fixed;
             bottom: 0;
@@ -81,13 +89,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        
+            box-sizing: border-box;
+            gap: 12px;
+        
+            transform: translateY(100%);
+            transition: transform 0.35s ease;
         }
-
+        
+        .cart-panel.show {
+            transform: translateY(0);
+        }
+        
         .cart-total {
             font-size: 18px;
             font-weight: bold;
+            flex-grow: 1;
+            white-space: nowrap;
         }
-
+        
         .hidden {
             display: none;
         }
@@ -134,25 +154,33 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); // делает webapp на весь экран
+tg.expand();
 
-    let cart = [];
-    let total = 0;
+let cart = [];
+let total = 0;
 
-    function addToCart(name, price) {
-        cart.push({ name, price });
-        total += price;
+function addToCart(name, price) {
+    cart.push({ name, price });
+    total += price;
 
-        document.getElementById("cartTotal").innerText = `Total: $${total.toFixed(2)}`;
-        document.getElementById("cartPanel").classList.remove("hidden");
-    }
+    document.getElementById("cartTotal").innerText = `Total: $${total.toFixed(2)}`;
 
-    function checkout() {
-        tg.sendData(JSON.stringify(cart)); // отправка данных в бота
-        tg.close();
-    }
+    const panel = document.getElementById("cartPanel");
+
+    // показываем, если скрыто
+    panel.classList.remove("hidden");
+
+    // запускаем анимацию появления
+    panel.classList.add("show");
+}
+
+function checkout() {
+    tg.sendData(JSON.stringify(cart));
+    tg.close();
+}
 </script>
 
 </body>
 </html>
+
 
